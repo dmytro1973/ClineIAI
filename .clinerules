@@ -1,0 +1,73 @@
+# MedBook Search AI - Auto-Fix-Loop Regeln
+
+## Automatische Fehlerbehandlung
+
+Wenn die Datei `cline-errors.md` im Projektroot existiert:
+
+### Schritt 1: Fehler analysieren
+1. Lies `cline-errors.md` vollständig
+2. Identifiziere jeden Fehlertyp:
+   - CONSOLE_ERROR → JavaScript/React-Fehler
+   - PAGE_ERROR → Runtime-Exceptions
+   - NETWORK_ERROR → API/Fetch-Probleme
+   - HTTP_ERROR → Backend-Fehler (4xx, 5xx)
+   - ROUTE_ERROR → Seiten laden nicht
+   - ACTION_ERROR → UI-Interaktionen fehlgeschlagen
+   - API_ERROR → Backend nicht erreichbar
+
+### Schritt 2: Fehler lokalisieren
+- Frontend-Fehler → `/frontend/src/`
+- Backend-Fehler → `/backend/app/`
+- API-Routing → `/backend/app/routers/`
+- React-Komponenten → `/frontend/src/components/`
+- Seiten → `/frontend/src/pages/`
+- Stores/State → `/frontend/src/stores/`
+
+### Schritt 3: Korrigieren
+1. Öffne die betroffene Datei
+2. Behebe den Fehler
+3. Speichere die Datei
+
+### Schritt 4: Abschließen
+Nach allen Korrekturen:
+```bash
+del cline-errors.md
+```
+(Windows) oder
+```bash
+rm cline-errors.md
+```
+(Linux/Mac)
+
+Dies signalisiert der Auto-Fix-Schleife, dass sie den nächsten Testlauf starten kann.
+
+---
+
+## Häufige Fehler und Lösungen
+
+### TypeScript-Fehler
+- Fehlende Typen → Typen definieren oder `any` temporär nutzen
+- Import-Fehler → Pfade prüfen, `.ts`/`.tsx` Endungen
+
+### React-Fehler
+- Hook-Fehler → Hooks nur in Komponenten-Body
+- State-Updates → `useEffect` Dependencies prüfen
+
+### API-Fehler
+- CORS → Backend-CORS-Konfiguration prüfen
+- 404 → Routen in `/backend/app/routers/` prüfen
+- 500 → Backend-Logs prüfen, Exception-Handler
+
+### Netzwerk-Fehler
+- Connection refused → Backend läuft nicht
+- Timeout → Langsame Queries optimieren
+
+---
+
+## Prioritäten
+1. **FATAL/PAGE_ERROR** → App startet nicht
+2. **NETWORK_ERROR** → API-Kommunikation kaputt
+3. **HTTP_ERROR** → Backend-Logik fehlerhaft
+4. **CONSOLE_ERROR** → JavaScript-Bugs
+5. **ROUTE_ERROR** → Einzelne Seiten defekt
+6. **ACTION_ERROR** → UI-Probleme
