@@ -1,9 +1,30 @@
-# Ignore frontend for backend deployment
-frontend/
+# Node modules (will be installed fresh in container)
 node_modules/
+frontend/node_modules/
+backend/node_modules/
+
+# Python cache
 __pycache__/
 *.pyc
+*.pyo
+
+# Git
 .git/
+
+# Environment files
 .env
-*.md
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+
+# Build outputs
+frontend/dist/
+
+# Test files
+*.test.*
+*.spec.*
+
 .gitignore
