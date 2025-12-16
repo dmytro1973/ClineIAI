@@ -3,11 +3,12 @@ import logging
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
 from fastapi.exceptions import RequestValidationError
 from contextlib import asynccontextmanager
 import uvicorn
 from typing import Optional
+from pathlib import Path
 
 # Import configuration
 from .config import settings
@@ -122,10 +123,41 @@ app.include_router(credentials_router_module.router)
 app.include_router(translation_router_module.router)
 app.include_router(settings_router_module.router)
 
-# Mount static files (production build output)
-static_dir = os.path.join("frontend", "dist", "static")
-if os.path.isdir(static_dir):
-    app.mount("/static", StaticFiles(directory=static_dir), name="static")
+# ============================================================
+# FRONTEND STATIC FILES SERVING
+# ============================================================
+
+# Determine frontend dist path (relative to backend working directory)
+# In Docker: /app/backend is WORKDIR, frontend/dist is at /app/frontend/dist
+FRONTEND_DIR = Path(__file__).parent.parent.parent / "frontend" / "dist"
+
+# Mount static assets if they exist
+assets_dir = FRONTEND_DIR / "assets"
+if assets_dir.is_dir():
+    app.mount("/assets", StaticFiles(directory=str(assets_dir)), name="assets")
+    logger.info(f"Mounted frontend assets from {assets_dir}")
+
+# Serve index.html for all non-API routes (SPA support)
+@app.get("/{full_path:path}")
+async def serve_spa(request: Request, full_path: str):
+    """Serve the SPA - return index.html for all non-API routes"""
+    # Skip API routes
+    if full_path.startswith("api/"):
+        return JSONResponse(status_code=404, content={"error": "Not found"})
+    
+    index_file = FRONTEND_DIR / "index.html"
+    if index_file.is_file():
+        return FileResponse(str(index_file))
+    
+    # Fallback: return API info if no frontend
+    return JSONResponse({
+        "message": "MedBook Search AI API",
+        "version": settings.app.version,
+        "docs": "/docs",
+        "health": "/api/health"
+    })
+
+# ============================================================
 
 def run():
     """Run the application"""
