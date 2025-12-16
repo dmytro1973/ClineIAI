@@ -1,0 +1,9 @@
+# Ignore frontend for backend deployment
+frontend/
+node_modules/
+__pycache__/
+*.pyc
+.git/
+.env
+*.md
+.gitignore
