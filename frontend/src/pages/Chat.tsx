@@ -27,10 +27,10 @@ export default function Chat() {
     e.preventDefault()
     if (!input.trim() || isLoading) return
 
-    const newMessage = {
+    const newMessage: Message = {
       id: messages.length + 1,
       text: input,
-      sender: 'user'
+      sender: 'user' as const
     }
 
     setMessages([...messages, newMessage])
@@ -82,10 +82,10 @@ export default function Chat() {
         }
       }
 
-      const aiResponse = {
+      const aiResponse: Message = {
         id: messages.length + 2,
         text: responseText,
-        sender: 'ai',
+        sender: 'ai' as const,
         model: modelUsed,
         concepts: concepts
       }
